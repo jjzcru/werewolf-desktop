@@ -1,0 +1,71 @@
+body {
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+    background: #3D3D3D;
+    padding: 50px;
+}
+
+.card-container {
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+    padding: 50px;
+}
+
+.card-container-content {
+    border-radius: 5px;
+    background: #3D3D3D;
+    border: 2px solid #B2B2B2;
+    color: #B2B2B2;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: 20px;
+}
+
+.card-top {
+    height: 50%;
+    width: 100%;
+    margin: 0 auto;
+    border-bottom: 3px solid #B1BCBE;
+}
+
+.card-bottom {
+    height: 50%;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.character {
+    fill: #3D3D3D;
+}
+
+.card-title {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 18pt;
+}
+
+.card-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    text-align: center;
+    margin: auto;
+}
+
+.card-image {
+    margin: 0 auto;
+}
+
+.werewolf {
+    width: 70%;
+}
+
+.wildcard {
+    width: 50%;
+}
