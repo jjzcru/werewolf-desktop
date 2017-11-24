@@ -3,7 +3,11 @@ const path = require('path')
 const fs = require('fs')
 const url = require('url')
 const os = require('os');
-var networkInterfaces = os.networkInterfaces();
+const portastic = require('portastic');
+const networkInterfaces = os.networkInterfaces();
+const server = require('./server/server')
+const Client = require('./server/client')
+const DB = require('./server/db')
 
 let displayMenu = false;
 let mainWindow = {};
@@ -81,12 +85,16 @@ function createWindow() {
         resizable: false,
         fullscreen: false,
     });
+
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'views', 'index.html'),
         protocol: 'file:',
         slashes: true
     }));
+
     // mainWindow.webContents.openDevTools()
+    getOpenPort();
+
     mainWindow.webContents.on('did-finish-load', function() {
         fs.readFile(path.join(__dirname, 'views', 'style.css'), 'utf-8', function(error, data) {
             if (!error) {
@@ -105,13 +113,35 @@ function createWindow() {
 
     mainWindow.global = {
         playerName: 'Mary Elion',
-        ip: getIpAddress(),
-        port: 3301
+        ip: getIpAddress()
     };
+
+    mainWindow.createServer = () => {
+        server.start(mainWindow.global.port, mainWindow);
+    }
+}
+
+function getOpenPort() {
+    let lowerPort = 4000;
+    let higherPort = 9000;
+    portastic.find({
+            min: lowerPort,
+            max: higherPort
+        })
+        .then(ports => {
+            let randomIndex = Math.round(Math.random() * (ports.length - 0) + 0);
+            let port = ports[randomIndex];
+            let client = new Client();
+            client.setHost('192.168.1.104', 3330);
+            let db = new DB();
+            client.joinRoom("blur blur", 4440).then(data => {
+                console.log('Healthcheck');
+            })
+            mainWindow.global.port = port;
+        });
 }
 
 function getIpAddress() {
-    console.log()
     return networkInterfaces['Wi-Fi'][0]['address'];
 }
 

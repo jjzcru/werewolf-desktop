@@ -23,7 +23,7 @@
                             <a href="./index.html">CANCEL</a>
                         </div>
 
-                        <div class="button-next">NEXT</div>
+                        <div class="button-next" onclick="createServer()"><a href="javascript(0);">NEXT</a></div>
                     </div>
                 </div>
             </form>
@@ -38,6 +38,10 @@
     document.getElementById("player-name").placeholder = currentWindow.global.playerName;
     document.getElementById("player-ip").innerHTML = currentWindow.global.ip;
     document.getElementById("player-port").innerHTML = currentWindow.global.port;
+
+    function createServer() {
+        currentWindow.createServer();
+    }
 </script>
 
 </html>

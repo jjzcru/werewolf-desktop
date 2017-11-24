@@ -125,6 +125,10 @@ a {
     align-items: center;
 }
 
+.button-next>a {
+    color: #f4f4f4;
+}
+
 .player-name-form {
     width: 100%;
     text-align: center;
