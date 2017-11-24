@@ -2,6 +2,8 @@ const { app, BrowserWindow, Menu, globalShortcut, dialog, ipcRenderer } = requir
 const path = require('path')
 const fs = require('fs')
 const url = require('url')
+const os = require('os');
+var networkInterfaces = os.networkInterfaces();
 
 let displayMenu = false;
 let mainWindow = {};
@@ -18,7 +20,35 @@ let menuTemplate = [{
         label: 'Close',
         accelerator: 'Ctrl + Q',
         click: () => {
-            app.quit();
+            // app.quit();
+            mainWindow.close();
+        }
+    }]
+}, {
+    label: 'View',
+    submenu: [{
+        label: 'Plus Petit',
+        accelerator: 'Ctrl + 1',
+        click: () => {
+            windowSmaller()
+        }
+    }, {
+        label: 'Petit',
+        accelerator: 'Ctrl + 2',
+        click: () => {
+            windowSmall()
+        }
+    }, {
+        label: 'Normal',
+        accelerator: 'Ctrl + 3',
+        click: () => {
+            windowRegular()
+        }
+    }, {
+        label: 'Grand',
+        accelerator: 'Ctrl + 4',
+        click: () => {
+            windowsBig()
         }
     }]
 }];
@@ -48,60 +78,71 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 400,
         height: 800,
-        /*resizable: false,
-        fullscreen: false,*/
+        resizable: false,
+        fullscreen: false,
     });
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'views', 'index.html'),
         protocol: 'file:',
         slashes: true
     }));
-    mainWindow.webContents.openDevTools()
+    // mainWindow.webContents.openDevTools()
     mainWindow.webContents.on('did-finish-load', function() {
-        fs.readFile(path.join(__dirname, 'views', 'style.css'), "utf-8", function(error, data) {
+        fs.readFile(path.join(__dirname, 'views', 'style.css'), 'utf-8', function(error, data) {
             if (!error) {
                 var formatedData = data.replace(/\s{2,10}/g, ' ').trim()
                 mainWindow.webContents.insertCSS(formatedData)
             }
         })
-    })
+    });
 
     Menu.setApplicationMenu(null);
     loadShortcuts()
 
     mainWindow.on('closed', () => {
-        win = null
-    })
+        mainWindow = null
+    });
+
+    mainWindow.global = {
+        playerName: 'Mary Elion',
+        ip: getIpAddress(),
+        port: 3301
+    };
+}
+
+function getIpAddress() {
+    console.log()
+    return networkInterfaces['Wi-Fi'][0]['address'];
 }
 
 function loadShortcuts() {
-    globalShortcut.register('CommandOrControl+Space', function() {
+    globalShortcut.register('CommandOrControl+Space', () => {
         toggleMenu()
-    })
+    });
 
     globalShortcut.register('CommandOrControl+N', () => {
         dialog.showMessageBox({ type: 'info', message: 'Should create a new windows' })
-    })
+    });
 
     globalShortcut.register('CommandOrControl+Q', () => {
-        dialog.showMessageBox({ type: 'info', message: 'Should close current window' })
-    })
+        closeWindow()
+    });
 
     globalShortcut.register('CommandOrControl+1', () => {
-        mainWindow.setSize(200, 400)
-    })
+        windowSmaller()
+    });
 
     globalShortcut.register('CommandOrControl+2', () => {
-        mainWindow.setSize(300, 600)
-    })
+        windowSmall()
+    });
 
     globalShortcut.register('CommandOrControl+3', () => {
-        mainWindow.setSize(400, 800)
-    })
+        windowRegular()
+    });
 
     globalShortcut.register('CommandOrControl+4', () => {
-        mainWindow.setSize(500, 1000)
-    })
+        windowsBig()
+    });
 }
 
 function toggleMenu() {
@@ -113,5 +154,26 @@ function toggleMenu() {
     }
     displayMenu = !displayMenu;
 }
+
+function windowSmaller() {
+    mainWindow.setSize(200, 400)
+}
+
+function windowSmall() {
+    mainWindow.setSize(300, 600)
+}
+
+function windowRegular() {
+    mainWindow.setSize(400, 800)
+}
+
+function windowsBig() {
+    mainWindow.setSize(500, 1000)
+}
+
+function closeWindow() {
+    mainWindow.close()
+}
+
 
 module.exports = start;

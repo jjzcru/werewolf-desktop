@@ -3,18 +3,41 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <title>Werewolf</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <div class="card-container">
         <div class="card-container-content">
+            <form class="player-name-form">
+                <input type="text" id="player-name" class="player-name-input" name="player-name" placeholder="Mary Elion">
+                <div class="network-bar">
+                    <div class="player-ip" id="player-ip">192.168.1.104</div>
+                    <div class="player-port" id="player-port">3330</div>
+                </div>
+                <div class="button-bar-container">
+                    <div class="button-bar">
 
+                        <div class="button-cancel">
+                            <a href="./index.html">CANCEL</a>
+                        </div>
+
+                        <div class="button-next">NEXT</div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
     </div>
 
 </body>
+<script>
+    var electron = require('electron');
+    var currentWindow = electron.remote.getCurrentWindow();
+    document.getElementById("player-name").placeholder = currentWindow.global.playerName;
+    document.getElementById("player-ip").innerHTML = currentWindow.global.ip;
+    document.getElementById("player-port").innerHTML = currentWindow.global.port;
+</script>
 
 </html>
