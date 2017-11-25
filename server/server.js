@@ -1,7 +1,12 @@
 const express = require('express')
 const app = express()
+const DB = require('./db');
 
+let db = new DB();
 
+function getPlayers(req, res) {
+    db.connectionDB()
+}
 
 module.exports = {
     start(port, window) {
