@@ -12,7 +12,7 @@
         <div class="card-container-content">
             <div class="card-top">
                 <div class="card-content">
-                    <a href="./create-game.html">
+                    <a href="javascript:void(0);" onclick="goToCreateGame();">
                         <div>
                             <div class="card-image">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="werewolf" viewBox="0 0 24 13.34">
@@ -28,16 +28,18 @@
             </div>
             <div class="card-bottom">
                 <div class="card-content">
-                    <div>
-                        <div class="card-image">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="wildcard" viewBox="0 0 18.47 18.69">
+                    <a href="javascript:void(0);" onclick="goToJoinGame();">
+                        <div>
+                            <div class="card-image">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="wildcard" viewBox="0 0 18.47 18.69">
                                 <title>wildcard</title>
                                 <path d="M21.2,16.25a46.63,46.63,0,0,0-4.51-6.53.3.3,0,0,0,.09-.12l.35-.89a.3.3,0,0,0-.07-.33l-.45-.45L19.24,5.3v.91a.3.3,0,0,0,.6,0V4.57a.24.24,0,0,0,0,0h0v0h-.06l0,0h0l0,0H17.9a.3.3,0,0,0,0,.6h.91L16.19,7.5,15.73,7A.3.3,0,0,0,15.41,7l-.89.35a.31.31,0,0,0-.11.08A48,48,0,0,0,7.64,2.69a.3.3,0,0,0-.43.21L6.94,4.23a.3.3,0,0,0,.16.33,15.86,15.86,0,0,1,1.41.83L6.86,15.44l-4,4.33a.3.3,0,0,0,0,.42l1.07,1.07a.3.3,0,0,0,.42,0L8.8,17.12l9.79-1.6c.27.43.52.86.73,1.27a.3.3,0,0,0,.27.16h.06L21,16.68a.3.3,0,0,0,.21-.43ZM16.5,8.66l-.22.55-.43-.52.33-.33ZM15.45,7.61l.31.31-.32.33-.52-.43ZM7.72,3.41A58.66,58.66,0,0,1,15,8.68l-.63.63a40,40,0,0,0-6.8-5.18Zm6.23,6.32L7.32,16.36l.11-.64,6-6.46Zm.42.43.48.53L8.53,16.56l-.65.11ZM9.06,5.76A45.56,45.56,0,0,1,13,8.85L7.6,14.64ZM4.14,20.62,3.49,20l3.2-3.45L6.61,17a.3.3,0,0,0,.12.29.3.3,0,0,0,.25.13H7l.7-.11ZM9.6,16.38l5.64-5.23a42.75,42.75,0,0,1,3,3.82Zm10.16-.07a38.42,38.42,0,0,0-5-6.57l.62-.62a56.68,56.68,0,0,1,5.05,7.06Z"
                                     transform="translate(-2.77 -2.66)" class="character" />
                             </svg>
+                            </div>
+                            <div class="card-title">Join</div>
                         </div>
-                        <div class="card-title">Join</div>
-                    </div>
+                    </a>
                 </div>
             </div>
 
@@ -46,6 +48,19 @@
     </div>
 
 </body>
+<script>
+    var electron = require('electron');
+    var currentWindow = electron.remote.getCurrentWindow();
+
+    function goToCreateGame() {
+        currentWindow.actions.goToCreateRoom();
+        // window.location.href = "./create-game.html";
+    }
+
+    function goToJoinGame() {
+        currentWindow.actions.goToJoinRoom();
+    }
+</script>
 
 </html>
 

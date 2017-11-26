@@ -110,6 +110,7 @@ a {
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 }
 
 .button-cancel>a {
@@ -123,6 +124,7 @@ a {
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 }
 
 .button-next>a {
@@ -179,6 +181,46 @@ a {
     color: #B1BCBE;
     border: 2px solid #B1BCBE;
     border-radius: 5px;
+    justify-content: center;
+    align-items: center;
+}
+
+.network-bar-host {
+    width: 85%;
+    text-align: center;
+    margin: 0 auto;
+    display: flex;
+    margin-top: 100px;
+    height: 40px;
+}
+
+.host-ip-input {
+    height: 40px;
+    width: 60%;
+    font-family: "Roboto Bold", sans-serif;
+    background-color: #D8D5D5;
+    color: #616974;
+    border: 2px solid #616974;
+    border-radius: 5px;
+    margin-left: -5px;
+    margin-right: 25px;
+    display: flex;
+    font-size: 12pt;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.host-port-input {
+    height: 40px;
+    width: 30%;
+    display: flex;
+    font-family: "Roboto Bold", sans-serif;
+    color: #616974;
+    border: 2px solid #B1BCBE;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 12pt;
     justify-content: center;
     align-items: center;
 }

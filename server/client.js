@@ -24,17 +24,19 @@ module.exports = class Client {
         })
     }
 
-    async joinRoom(player, port) {
+    async joinRoom(port, player) {
         return new Promise((resolve, reject) => {
+            let body = {
+                name: player,
+                port: port
+            };
+            console.log(body);
+
             unirest.post(this.baseUrl + '/room/join')
                 .headers({
                     'Content-Type': 'application/json'
                 })
-                .send({
-                    name: player,
-                    mac: '',
-                    port: port
-                })
+                .send(body)
                 .end(function(response) {
                     let status = response.status;;
                     if (status >= 200 && status < 400) {

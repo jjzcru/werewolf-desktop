@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Werewolf</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="card-container">
+        <div class="card-container-content">
+            <form class="player-name-form">
+                <input type="text" id="player-name" class="player-name-input" name="player-name" placeholder="Mary Elion">
+                <div class="network-bar-host">
+                    <input type="text" id="host-ip" class="host-ip-input" name="host-ip" placeholder="E.g. 192.168.1.104">
+                    <input type="number" id="host-port" class="host-port-input" name="host-port" placeholder="E.g. 3330">
+                </div>
+                <div class="button-bar-container">
+                    <div class="button-bar">
+
+                        <div onclick="back();" class="button-cancel">
+                            CANCEL
+                        </div>
+
+                        <div class="button-next" onclick="joinServer()">
+                            NEXT
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+
+</body>
+<script>
+    var electron = require('electron');
+    var currentWindow = electron.remote.getCurrentWindow();
+    document.getElementById("player-name").placeholder = currentWindow.global.playerName;
+    document.getElementById("host-ip").innerHTML = currentWindow.global.ip;
+    document.getElementById("host-port").innerHTML = currentWindow.global.port;
+
+    function back() {
+        currentWindow.actions.goToIndex();
+    }
+
+    function joinServer() {
+        let playerName = "";
+        if (document.getElementById("player-name").value === "" ||
+            document.getElementById("player-name").value === undefined) {
+            playerName = document.getElementById("player-name").placeholder;
+        } else {
+            playerName = document.getElementById("player-name").value;
+        }
+
+        if (document.getElementById("host-ip").value === "" ||
+            document.getElementById("host-port").value === "") {
+            alert("Host ip and port can't be empty");
+        } else {
+            let host = document.getElementById("host-ip").value;
+            let port = document.getElementById("host-port").value;
+            console.log('I sent the request');
+            currentWindow.actions.joinRoom(playerName, host, parseInt(port));
+        }
+    }
+</script>
+
+</html>

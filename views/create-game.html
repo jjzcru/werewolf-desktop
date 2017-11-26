@@ -19,11 +19,13 @@
                 <div class="button-bar-container">
                     <div class="button-bar">
 
-                        <div class="button-cancel">
-                            <a href="./index.html">CANCEL</a>
+                        <div onclick="back();" class="button-cancel">
+                            CANCEL
                         </div>
 
-                        <div class="button-next" onclick="createServer()"><a href="javascript(0);">NEXT</a></div>
+                        <div class="button-next" onclick="createServer()">
+                            NEXT
+                        </div>
                     </div>
                 </div>
             </form>
@@ -35,11 +37,22 @@
 <script>
     var electron = require('electron');
     var currentWindow = electron.remote.getCurrentWindow();
+
     document.getElementById("player-name").placeholder = currentWindow.global.playerName;
     document.getElementById("player-ip").innerHTML = currentWindow.global.ip;
     document.getElementById("player-port").innerHTML = currentWindow.global.port;
 
+    function back() {
+        currentWindow.actions.goToIndex();
+    }
+
     function createServer() {
+        if (document.getElementById("player-name").value === "" || document.getElementById("player-name").value === undefined) {
+            currentWindow.global.playerName = document.getElementById("player-name").placeholder;
+        } else {
+            currentWindow.global.playerName = document.getElementById("player-name").value;
+        }
+        currentWindow.global.playerName = playerName;
         currentWindow.createServer();
     }
 </script>

@@ -1,17 +1,35 @@
 const express = require('express')
-const app = express()
 const DB = require('./db');
 
-let db = new DB();
+module.exports = class Server {
+    constructor(window, port) {
+        this.window = window;
+        this.port = port;
+        this.db = new DB();
+        this.app = express();
+    }
 
-function getPlayers(req, res) {
-    db.connectionDB()
-}
+    start() {
+        let app = this.app;
+        app.get('/', this.healthCheck)
+        app.listen(this.port, () => {
+            console.log(`Server running on port: ${this.port}`)
+        });
 
-module.exports = {
-    start(port, window) {
-        app.get('/', (req, res) => res.send('Hello World!'))
+        this.app = app;
+    }
 
-        app.listen(port, () => console.log(`Server running on port: ${port}`))
+    stop() {
+        this.app.close();
+    }
+
+    healthCheck(req, res) {
+        res.send({
+            healthy: true
+        });
+    }
+
+    listPlayers(req, res) {
+
     }
 }

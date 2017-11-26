@@ -5,12 +5,109 @@ const url = require('url')
 const os = require('os');
 const portastic = require('portastic');
 const networkInterfaces = os.networkInterfaces();
-const server = require('./server/server')
+const Server = require('./server/Server')
 const Client = require('./server/client')
-const DB = require('./server/db')
 
 let displayMenu = false;
 let mainWindow = {};
+
+const playerNamesArray = [
+    "Galileo",
+    "William ",
+    "Hans",
+    "Johannes",
+    "John",
+    "Willebrord",
+    "Nicolaus",
+    "William",
+    "Rene",
+    "Blaise",
+    "Thomas",
+    "Christiaan",
+    "Pierre",
+    "Jan",
+    "Otto",
+    "Robert",
+    "Robert",
+    "James",
+    "Leonardo",
+    "Isaac",
+    "John",
+    "Hennig",
+    "Antony",
+    "Christiann",
+    "Gottfried",
+    "Leonardo",
+    "Leonhard",
+    "Louis",
+    "Marie",
+    "Albert",
+    "Jane",
+    "Maria",
+    "Rachel",
+    "Rosalind",
+    "Barbara",
+    "Gertrude",
+    "Elizabeth",
+    "Joy",
+    "Maria",
+    "Mary",
+    "Virginia",
+    "Elizabeth",
+    "Clara",
+    "Florence",
+    "Ruth",
+    "Elizabeth"
+]
+
+const playerLastNamesArray = [
+    "Galilei ",
+    "Gilbert",
+    "Lippershey",
+    "Kepler",
+    "Napier",
+    "Snell",
+    "Cabeus",
+    "Oughtred",
+    "Descartes",
+    "Pascal",
+    "Bartholin",
+    "Huygens",
+    "de Fermat",
+    "Swammerdam",
+    "von Guericke",
+    "Hooke",
+    "Boyle",
+    "Gregory",
+    "Da Vinci",
+    "Newton",
+    "Wallis",
+    "Brand",
+    "van Leeuwenhoek",
+    "Huygens",
+    "Leibniz",
+    "Fibonacci",
+    "Euler",
+    "Pasteur",
+    "Curie",
+    "Einstein",
+    "Goodall",
+    "Mayer",
+    "Carson",
+    "Franklin",
+    "Mcclintock",
+    "Elion",
+    "Blackwell",
+    "Adamson",
+    "Agnesi",
+    "Anning",
+    "Apgar",
+    "Arden",
+    "Barton",
+    "Bascom",
+    "Benedict",
+    "Britton"
+]
 
 let menuTemplate = [{
     label: 'File',
@@ -82,7 +179,7 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 400,
         height: 800,
-        resizable: false,
+        resizable: true,
         fullscreen: false,
     });
 
@@ -92,8 +189,8 @@ function createWindow() {
         slashes: true
     }));
 
-    // mainWindow.webContents.openDevTools()
-    getOpenPort();
+    mainWindow.webContents.openDevTools()
+
 
     mainWindow.webContents.on('did-finish-load', function() {
         fs.readFile(path.join(__dirname, 'views', 'style.css'), 'utf-8', function(error, data) {
@@ -111,34 +208,105 @@ function createWindow() {
         mainWindow = null
     });
 
+
+
     mainWindow.global = {
-        playerName: 'Mary Elion',
-        ip: getIpAddress()
+        playerName: getRandomName(),
+        ip: getIpAddress(),
+        client: new Client()
     };
 
+    mainWindow.actions = {
+        goToCreateRoom: function() {
+            mainWindow.global.playerName = getRandomName();
+            getOpenPort()
+                .then((port) => {
+                    mainWindow.global.port = port;
+                    mainWindow.loadURL(url.format({
+                        pathname: path.join(__dirname, 'views', 'create-game.html'),
+                        protocol: 'file:',
+                        slashes: true
+                    }));
+                })
+                .catch(err => console.log(err));
+
+        },
+        goToIndex: function() {
+            mainWindow.loadURL(url.format({
+                pathname: path.join(__dirname, 'views', 'index.html'),
+                protocol: 'file:',
+                slashes: true
+            }));
+        },
+        goToJoinRoom: function() {
+            getOpenPort()
+                .then((port) => {
+                    mainWindow.global.port = port;
+                    mainWindow.global.playerName = getRandomName();
+                    mainWindow.loadURL(url.format({
+                        pathname: path.join(__dirname, 'views', 'join-game.html'),
+                        protocol: 'file:',
+                        slashes: true
+                    }));
+                })
+                .catch(err => console.log(err));
+        },
+        joinRoom: function(player, host, port) {
+            console.log(`Player: ${player}`);
+            console.log(`Host: ${host}`);
+            console.log(`Port: ${port}`);
+
+            mainWindow.server = new Server(mainWindow, mainWindow.global.port);
+            try {
+                mainWindow.server.start();
+            } catch (e) {
+                console.log(e);
+                mainWindow.server.stop()
+            }
+
+
+            mainWindow.global.client.setHost(host, port);
+            mainWindow.global.client.joinRoom(mainWindow.global.port, player)
+                .then(response => {
+                    console.log(response);
+                })
+                .catch(err => {
+                    console.log("Llegue al error");
+                    console.log(err);
+                })
+        }
+    }
     mainWindow.createServer = () => {
-        server.start(mainWindow.global.port, mainWindow);
+        mainWindow.server = new Server(mainWindow, mainWindow.global.port);
+        mainWindow.server.start();
     }
 }
 
+function getRandomName() {
+    let randomIndex = Math.floor(Math.random() * playerNamesArray.length);
+    let name = playerNamesArray[randomIndex];
+    randomIndex = Math.floor(Math.random() * playerLastNamesArray.length);
+    let lastName = playerLastNamesArray[randomIndex];
+    return `${name} ${lastName}`;
+}
+
 function getOpenPort() {
-    let lowerPort = 4000;
-    let higherPort = 9000;
-    portastic.find({
-            min: lowerPort,
-            max: higherPort
-        })
-        .then(ports => {
-            let randomIndex = Math.round(Math.random() * (ports.length - 0) + 0);
-            let port = ports[randomIndex];
-            let client = new Client();
-            client.setHost('192.168.1.104', 3330);
-            let db = new DB();
-            client.joinRoom("blur blur", 4440).then(data => {
-                console.log('Healthcheck');
+    return new Promise((resolve, reject) => {
+        let lowerPort = 8000;
+        let higherPort = 8100;
+        portastic.find({
+                min: lowerPort,
+                max: higherPort
             })
-            mainWindow.global.port = port;
-        });
+            .then(ports => {
+                let randomIndex = Math.round(Math.random() * (ports.length - 0) + 0);
+                let port = ports[randomIndex];
+                resolve(port);
+            })
+            .catch(err => {
+                reject(err);
+            });
+    })
 }
 
 function getIpAddress() {
