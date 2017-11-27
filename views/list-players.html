@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Werewolf</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="card-container">
+        <div class="card-container-content">
+            <div class="list-player-top">
+                <div class="list-player-name">
+                    Thomas Curie
+                </div>
+                <div class="list-player-count">
+                    (3)
+                </div>
+            </div>
+
+            <div class="list-player-content">
+                <div class="list-player-item">
+                    Thomas Curie
+                </div>
+                <div class="list-player-item">
+                    Thomas Curie
+                </div>
+                <div class="list-player-item">
+                    Thomas Curie
+                </div>
+                <div class="list-player-item">
+                    Thomas Curie
+                </div>
+                <div class="list-player-item">
+                    Thomas Curie
+                </div>
+                <div class="list-player-item">
+                    Thomas Curie
+                </div>
+                <div class="list-player-item">
+                    Thomas Curie
+                </div>
+                <div class="list-player-item">
+                    Thomas Curie
+                </div>
+                <div class="list-player-item">
+                    Thomas Curie
+                </div>
+                <div class="list-player-item">
+                    Thomas Curie
+                </div>
+                <div class="list-player-item">
+                    Thomas Curie
+                </div>
+                <div class="list-player-item">
+                    Thomas Curie
+                </div>
+                <div class="list-player-item">
+                    Thomas Curie
+                </div>
+                <div class="list-player-item">
+                    Thomas Curie
+                </div>
+                <div class="list-player-item">
+                    Thomas Curie
+                </div>
+                <div class="list-player-item">
+                    Thomas Curie
+                </div>
+                <div class="list-player-item">
+                    Thomas Curie
+                </div>
+                <div class="list-player-item">
+                    Thomas Curie
+                </div>
+            </div>
+
+            <div class="button-bar-container">
+                <div class="button-bar">
+                    <div onclick="back();" class="button-cancel">
+                        CANCEL
+                    </div>
+
+                    <div class="button-next" onclick="joinServer()">
+                        NEXT
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+</body>
+<script>
+    var electron = require('electron');
+    var currentWindow = electron.remote.getCurrentWindow();
+    document.getElementById("player-name").placeholder = currentWindow.global.playerName;
+    document.getElementById("host-ip").innerHTML = currentWindow.global.ip;
+    document.getElementById("host-port").innerHTML = currentWindow.global.port;
+
+    function back() {
+        currentWindow.actions.goToJoinRoom();
+    }
+</script>
+
+</html>

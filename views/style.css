@@ -224,3 +224,74 @@ a {
     justify-content: center;
     align-items: center;
 }
+
+.list-player-top {
+    height: 70px;
+    color: #616974;
+    border-bottom: 3px solid #B1BCBE;
+    display: flex;
+    align-items: center;
+    margin: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.list-player-name {
+    font-family: "Roboto", sans-serif;
+    font-size: 15pt;
+    color: #616974;
+    text-align: left;
+    flex-basis: 80%;
+}
+
+.list-player-item {
+    display: flex;
+    flex-direction: column;
+    height: 70px;
+    width: 100%;
+    font-family: "Roboto", sans-serif;
+    font-size: 13.5pt;
+    justify-content: center;
+    color: #616974;
+    text-align: left;
+}
+
+.list-player-count {
+    font-family: "Roboto Bold", sans-serif;
+    font-size: 13.5pt;
+    color: #616974;
+    text-align: right;
+    float: right;
+    position: relative;
+    flex-basis: 20%;
+}
+
+.list-player-content {
+    overflow-y: auto;
+    position: absolute;
+    width: 95%;
+    top: 73px;
+    bottom: 70px;
+    padding-left: 20px;
+    margin-right: 20px;
+    overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+    width: 2px;
+}
+
+::-webkit-scrollbar-track-piece {
+    background-color: #f4f4f4;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #CBCBCB;
+    outline: 2px solid #f4f4f4;
+    outline-offset: -2px;
+    border: .1px solid #B7B7B7;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #909090;
+}

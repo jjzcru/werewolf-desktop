@@ -269,6 +269,11 @@ function createWindow() {
             mainWindow.global.client.joinRoom(mainWindow.global.port, player)
                 .then(response => {
                     console.log(response);
+                    mainWindow.loadURL(url.format({
+                        pathname: path.join(__dirname, 'views', 'list-players.html'),
+                        protocol: 'file:',
+                        slashes: true
+                    }));
                 })
                 .catch(err => {
                     console.log("Llegue al error");
