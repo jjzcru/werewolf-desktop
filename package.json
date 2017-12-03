@@ -2,11 +2,17 @@
   "name": "werewolf",
   "version": "0.1.0",
   "main": "main.js",
+    "scripts": {
+        "start": "electron ."
+    },
   "dependencies": {
     "express": "^4.16.2",
     "lokijs": "^1.5.1",
     "portastic": "^1.0.1",
     "unirest": "^0.5.1",
     "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "electron": "1.7.9"
   }
 }

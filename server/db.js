@@ -3,7 +3,7 @@ const loki = require('lokijs')
     // uuidv4();
 module.exports = class DB {
     constructor() {
-        this.db = new loki('Werewolf');
+        this.db = new loki(uuidv4());
         this.connectionDB = this.db.addCollection('connection', {
             unique: ["ConnectionID"]
         });

@@ -1,26 +1,37 @@
 const express = require('express')
-const DB = require('./db');
 
 module.exports = class Server {
-    constructor(window, port) {
-        this.window = window;
+    constructor(events, port, db) {
+        this.events = events;
         this.port = port;
-        this.db = new DB();
+        this.db = db;
         this.app = express();
+        this.running = false;
+        this.server = null;
     }
 
     start() {
-        let app = this.app;
-        app.get('/', this.healthCheck)
-        app.listen(this.port, () => {
-            console.log(`Server running on port: ${this.port}`)
-        });
+        // let app = this.app;
+		console.log(`This server`);
+	    console.log(this.server)
+	    if(this.server === null) {
+		    this.app.get('/', this.healthCheck)
+		    this.app.get('/room/player', this.listPlayers)
+		    this.server = this.app.listen(this.port, () => {
+			    console.log(`Server running on port: ${this.port}`)
+		    });
+	    }
+    }
 
-        this.app = app;
+    isRunning() {
+    	return this.running
     }
 
     stop() {
-        this.app.close();
+	    if(this.server !== null) {
+		    this.server.close();
+	    }
+
     }
 
     healthCheck(req, res) {
@@ -30,6 +41,25 @@ module.exports = class Server {
     }
 
     listPlayers(req, res) {
-
+		this.db.getPlayers()
+		.then(players => {
+			res.send(players);
+		})
+	    .catch(err=> {
+	    	res.status(500).send({error: err});
+	    })
     }
+
+
 }
+
+/*var events = require('events');
+var eventEmitter = new events.EventEmitter();
+
+var ringBell = function ringBell()
+{
+	console.log('ring ring ring');
+}
+eventEmitter.on('doorOpen', ringBell);
+
+eventEmitter.emit('doorOpen');*/

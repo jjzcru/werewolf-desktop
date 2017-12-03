@@ -23,7 +23,7 @@
                             CANCEL
                         </div>
 
-                        <div class="button-next" onclick="createServer()">
+                        <div class="button-next" onclick="createRoom()">
                             NEXT
                         </div>
                     </div>
@@ -43,17 +43,18 @@
     document.getElementById("player-port").innerHTML = currentWindow.global.port;
 
     function back() {
-        currentWindow.actions.goToIndex();
+        currentWindow.actions.back();
     }
 
-    function createServer() {
-        if (document.getElementById("player-name").value === "" || document.getElementById("player-name").value === undefined) {
-            currentWindow.global.playerName = document.getElementById("player-name").placeholder;
+    function createRoom() {
+	    let playerName = "";
+        if (document.getElementById("player-name").value === "" ||
+            document.getElementById("player-name").value === undefined) {
+	        playerName = document.getElementById("player-name").placeholder;
         } else {
-            currentWindow.global.playerName = document.getElementById("player-name").value;
+	        playerName = document.getElementById("player-name").value;
         }
-        currentWindow.global.playerName = playerName;
-        currentWindow.createServer();
+        currentWindow.actions.createRoom(playerName, currentWindow.global.port);
     }
 </script>
 

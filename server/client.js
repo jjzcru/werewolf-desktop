@@ -41,6 +41,7 @@ module.exports = class Client {
                     let status = response.status;;
                     if (status >= 200 && status < 400) {
                         console.log(`Status: ${status}`);
+
                         resolve(response.body)
                     } else {
                         reject(response.body);
@@ -51,14 +52,9 @@ module.exports = class Client {
 
     async getPlayers() {
         return new Promise((resolve, reject) => {
-            unirest.post(this.baseUrl + '/room/join')
+            unirest.get(this.baseUrl + '/room/join')
                 .headers({
                     'Content-Type': 'application/json'
-                })
-                .send({
-                    name: player,
-                    mac: '',
-                    port: port
                 })
                 .end(function(response) {
                     let status = response.status;;

@@ -8,71 +8,20 @@
 </head>
 
 <body>
-    <div class="card-container">
+    <div id="app" class="card-container">
         <div class="card-container-content">
             <div class="list-player-top">
                 <div class="list-player-name">
-                    Thomas Curie
+                    {{ playerName }}
                 </div>
                 <div class="list-player-count">
-                    (3)
+                    ({{ players.length + 1 }})
                 </div>
             </div>
 
             <div class="list-player-content">
-                <div class="list-player-item">
-                    Thomas Curie
-                </div>
-                <div class="list-player-item">
-                    Thomas Curie
-                </div>
-                <div class="list-player-item">
-                    Thomas Curie
-                </div>
-                <div class="list-player-item">
-                    Thomas Curie
-                </div>
-                <div class="list-player-item">
-                    Thomas Curie
-                </div>
-                <div class="list-player-item">
-                    Thomas Curie
-                </div>
-                <div class="list-player-item">
-                    Thomas Curie
-                </div>
-                <div class="list-player-item">
-                    Thomas Curie
-                </div>
-                <div class="list-player-item">
-                    Thomas Curie
-                </div>
-                <div class="list-player-item">
-                    Thomas Curie
-                </div>
-                <div class="list-player-item">
-                    Thomas Curie
-                </div>
-                <div class="list-player-item">
-                    Thomas Curie
-                </div>
-                <div class="list-player-item">
-                    Thomas Curie
-                </div>
-                <div class="list-player-item">
-                    Thomas Curie
-                </div>
-                <div class="list-player-item">
-                    Thomas Curie
-                </div>
-                <div class="list-player-item">
-                    Thomas Curie
-                </div>
-                <div class="list-player-item">
-                    Thomas Curie
-                </div>
-                <div class="list-player-item">
-                    Thomas Curie
+                <div class="list-player-item" v-for="player in players">
+                    {{player}}
                 </div>
             </div>
 
@@ -92,15 +41,22 @@
     </div>
 
 </body>
+<script type="text/javascript" src="vue.min.js"></script>
 <script>
     var electron = require('electron');
     var currentWindow = electron.remote.getCurrentWindow();
-    document.getElementById("player-name").placeholder = currentWindow.global.playerName;
-    document.getElementById("host-ip").innerHTML = currentWindow.global.ip;
-    document.getElementById("host-port").innerHTML = currentWindow.global.port;
+    let playerName = currentWindow.global.playerName;
+    let players = currentWindow.global.players;
+    var app = new Vue({
+        el: '#app',
+        data: {
+            playerName: playerName,
+            players: players
+        }
+    });
 
     function back() {
-        currentWindow.actions.goToJoinRoom();
+        currentWindow.actions.back();
     }
 </script>
 

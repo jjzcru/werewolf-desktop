@@ -1,161 +1,23 @@
+const events = require('events');
 const { app, BrowserWindow, Menu, globalShortcut, dialog, ipcRenderer } = require('electron')
 const path = require('path')
 const fs = require('fs')
 const url = require('url')
 const os = require('os');
 const portastic = require('portastic');
+const uuidv4 = require('uuid/v4')
 const networkInterfaces = os.networkInterfaces();
-const Server = require('./server/Server')
+const Server = require('./server/server')
 const Client = require('./server/client')
+const {  menuTemplate, getRandomName } = require('./config');
+const DB = require('./server/db')
 
 let displayMenu = false;
 let mainWindow = {};
-
-const playerNamesArray = [
-    "Galileo",
-    "William ",
-    "Hans",
-    "Johannes",
-    "John",
-    "Willebrord",
-    "Nicolaus",
-    "William",
-    "Rene",
-    "Blaise",
-    "Thomas",
-    "Christiaan",
-    "Pierre",
-    "Jan",
-    "Otto",
-    "Robert",
-    "Robert",
-    "James",
-    "Leonardo",
-    "Isaac",
-    "John",
-    "Hennig",
-    "Antony",
-    "Christiann",
-    "Gottfried",
-    "Leonardo",
-    "Leonhard",
-    "Louis",
-    "Marie",
-    "Albert",
-    "Jane",
-    "Maria",
-    "Rachel",
-    "Rosalind",
-    "Barbara",
-    "Gertrude",
-    "Elizabeth",
-    "Joy",
-    "Maria",
-    "Mary",
-    "Virginia",
-    "Elizabeth",
-    "Clara",
-    "Florence",
-    "Ruth",
-    "Elizabeth"
-]
-
-const playerLastNamesArray = [
-    "Galilei ",
-    "Gilbert",
-    "Lippershey",
-    "Kepler",
-    "Napier",
-    "Snell",
-    "Cabeus",
-    "Oughtred",
-    "Descartes",
-    "Pascal",
-    "Bartholin",
-    "Huygens",
-    "de Fermat",
-    "Swammerdam",
-    "von Guericke",
-    "Hooke",
-    "Boyle",
-    "Gregory",
-    "Da Vinci",
-    "Newton",
-    "Wallis",
-    "Brand",
-    "van Leeuwenhoek",
-    "Huygens",
-    "Leibniz",
-    "Fibonacci",
-    "Euler",
-    "Pasteur",
-    "Curie",
-    "Einstein",
-    "Goodall",
-    "Mayer",
-    "Carson",
-    "Franklin",
-    "Mcclintock",
-    "Elion",
-    "Blackwell",
-    "Adamson",
-    "Agnesi",
-    "Anning",
-    "Apgar",
-    "Arden",
-    "Barton",
-    "Bascom",
-    "Benedict",
-    "Britton"
-]
-
-let menuTemplate = [{
-    label: 'File',
-    submenu: [{
-        label: 'New',
-        accelerator: 'Ctrl + N',
-        click: () => {
-            console.log('About Clicked');
-        }
-    }, {
-        label: 'Close',
-        accelerator: 'Ctrl + Q',
-        click: () => {
-            // app.quit();
-            mainWindow.close();
-        }
-    }]
-}, {
-    label: 'View',
-    submenu: [{
-        label: 'Plus Petit',
-        accelerator: 'Ctrl + 1',
-        click: () => {
-            windowSmaller()
-        }
-    }, {
-        label: 'Petit',
-        accelerator: 'Ctrl + 2',
-        click: () => {
-            windowSmall()
-        }
-    }, {
-        label: 'Normal',
-        accelerator: 'Ctrl + 3',
-        click: () => {
-            windowRegular()
-        }
-    }, {
-        label: 'Grand',
-        accelerator: 'Ctrl + 4',
-        click: () => {
-            windowsBig()
-        }
-    }]
-}];
+let rooms = [];
 
 function start() {
-    app.on('ready', createWindow)
+    app.on('ready', createMainWindow)
 
     app.on('window-all-closed', () => {
         // On macOS it is common for applications and their menu bar
@@ -168,14 +30,14 @@ function start() {
     app.on('activate', () => {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
-        if (win === null) {
-            createWindow()
+        if (mainWindow === null) {
+            createMainWindow()
         }
     })
 }
 
 
-function createWindow() {
+function createMainWindow() {
     mainWindow = new BrowserWindow({
         width: 400,
         height: 800,
@@ -183,14 +45,17 @@ function createWindow() {
         fullscreen: false,
     });
 
+    mainWindow.stack = [];
+
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'views', 'index.html'),
         protocol: 'file:',
         slashes: true
     }));
 
-    mainWindow.webContents.openDevTools()
+    mainWindow.db = new DB();
 
+    // mainWindow.webContents.openDevTools()
 
     mainWindow.webContents.on('did-finish-load', function() {
         fs.readFile(path.join(__dirname, 'views', 'style.css'), 'utf-8', function(error, data) {
@@ -208,8 +73,6 @@ function createWindow() {
         mainWindow = null
     });
 
-
-
     mainWindow.global = {
         playerName: getRandomName(),
         ip: getIpAddress(),
@@ -217,11 +80,27 @@ function createWindow() {
     };
 
     mainWindow.actions = {
+        back: function() {
+            let view = '';
+            mainWindow.stack.pop();
+            if (mainWindow.stack.length > 0) {
+                view = mainWindow.stack[mainWindow.stack.length - 1];
+            } else {
+                view = 'index'
+            }
+
+            mainWindow.loadURL(url.format({
+                pathname: path.join(__dirname, 'views', `${view}.html`),
+                protocol: 'file:',
+                slashes: true
+            }));
+        },
         goToCreateRoom: function() {
-            mainWindow.global.playerName = getRandomName();
             getOpenPort()
                 .then((port) => {
                     mainWindow.global.port = port;
+                    mainWindow.global.playerName = getRandomName();
+                    mainWindow.stack.push('create-game');
                     mainWindow.loadURL(url.format({
                         pathname: path.join(__dirname, 'views', 'create-game.html'),
                         protocol: 'file:',
@@ -231,18 +110,12 @@ function createWindow() {
                 .catch(err => console.log(err));
 
         },
-        goToIndex: function() {
-            mainWindow.loadURL(url.format({
-                pathname: path.join(__dirname, 'views', 'index.html'),
-                protocol: 'file:',
-                slashes: true
-            }));
-        },
         goToJoinRoom: function() {
             getOpenPort()
                 .then((port) => {
                     mainWindow.global.port = port;
                     mainWindow.global.playerName = getRandomName();
+                    mainWindow.stack.push('join-game');
                     mainWindow.loadURL(url.format({
                         pathname: path.join(__dirname, 'views', 'join-game.html'),
                         protocol: 'file:',
@@ -251,12 +124,54 @@ function createWindow() {
                 })
                 .catch(err => console.log(err));
         },
-        joinRoom: function(player, host, port) {
-            console.log(`Player: ${player}`);
-            console.log(`Host: ${host}`);
-            console.log(`Port: ${port}`);
+        createRoom: function(name, port) {
+            mainWindow.global.playerName = name;
+            mainWindow.global.port = port;
 
-            mainWindow.server = new Server(mainWindow, mainWindow.global.port);
+            if (mainWindow.server === undefined) {
+                mainWindow.server = new Server(mainWindow.events, port, mainWindow.db);
+            }
+
+            try {
+                mainWindow.server.start();
+            } catch (e) {
+                console.log(e);
+            }
+
+            let connection = {
+                ConnectionID: uuidv4(),
+                ip: getIpAddress(),
+                port: port,
+                type: 'master',
+                lock: false
+            };
+
+            let player = {
+                PlayerID: uuidv4(),
+                ConnectionID: connection.ConnectionID,
+                name: name,
+                class: '',
+                role: '',
+                alive: true
+            };
+
+            mainWindow.db.addConnection(connection)
+                .then(() => mainWindow.db.addPlayer(player))
+                .then(() => {
+                    mainWindow.global.ConnectionID = player.ConnectionID;
+                    mainWindow.global.PlayerID = player.PlayerID;
+                    mainWindow.global.playerName = player.name;
+                    mainWindow.global.players = [];
+                    mainWindow.stack.push('list-players');
+                    mainWindow.loadURL(url.format({
+                        pathname: path.join(__dirname, 'views', 'list-players.html'),
+                        protocol: 'file:',
+                        slashes: true
+                    }));
+                });
+        },
+        joinRoom: function(player, host, port) {
+            mainWindow.server = new Server(mainWindow.events, mainWindow.global.port, mainWindow.db);
             try {
                 mainWindow.server.start();
             } catch (e) {
@@ -268,7 +183,22 @@ function createWindow() {
             mainWindow.global.client.setHost(host, port);
             mainWindow.global.client.joinRoom(mainWindow.global.port, player)
                 .then(response => {
+                    console.log(`RESPONSE`);
                     console.log(response);
+                    return mainWindow.db.addPlayer({
+                        ConnectionID: response.ConnectionID,
+                        PlayerID: response.PlayerID,
+                        name: response.name,
+                        class: '',
+                        role: '',
+                        alive: true
+                    })
+                })
+                .then(player => {
+                    mainWindow.global.ConnectionID = player.ConnectionID;
+                    mainWindow.global.PlayerID = player.PlayerID;
+                    mainWindow.global.playerName = player.name;
+                    mainWindow.global.players = [];
                     mainWindow.loadURL(url.format({
                         pathname: path.join(__dirname, 'views', 'list-players.html'),
                         protocol: 'file:',
@@ -281,18 +211,6 @@ function createWindow() {
                 })
         }
     }
-    mainWindow.createServer = () => {
-        mainWindow.server = new Server(mainWindow, mainWindow.global.port);
-        mainWindow.server.start();
-    }
-}
-
-function getRandomName() {
-    let randomIndex = Math.floor(Math.random() * playerNamesArray.length);
-    let name = playerNamesArray[randomIndex];
-    randomIndex = Math.floor(Math.random() * playerLastNamesArray.length);
-    let lastName = playerLastNamesArray[randomIndex];
-    return `${name} ${lastName}`;
 }
 
 function getOpenPort() {

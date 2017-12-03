@@ -11,7 +11,7 @@
     <div class="card-container">
         <div class="card-container-content">
             <form class="player-name-form">
-                <input type="text" id="player-name" class="player-name-input" name="player-name" placeholder="Mary Elion">
+                <input type="text" id="player-name" class="player-name-input" name="player-name">
                 <div class="network-bar-host">
                     <input type="text" id="host-ip" class="host-ip-input" name="host-ip" placeholder="E.g. 192.168.1.104">
                     <input type="number" id="host-port" class="host-port-input" name="host-port" placeholder="E.g. 3330">
@@ -42,7 +42,7 @@
     document.getElementById("host-port").innerHTML = currentWindow.global.port;
 
     function back() {
-        currentWindow.actions.goToIndex();
+        currentWindow.actions.back();
     }
 
     function joinServer() {
