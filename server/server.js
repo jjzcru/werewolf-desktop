@@ -11,9 +11,6 @@ module.exports = class Server {
     }
 
     start() {
-        // let app = this.app;
-		console.log(`This server`);
-	    console.log(this.server)
 	    if(this.server === null) {
 		    this.app.get('/', this.healthCheck)
 		    this.app.get('/room/player', this.listPlayers)

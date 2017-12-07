@@ -20,7 +20,7 @@
                     <div class="button-bar">
 
                         <div onclick="back();" class="button-cancel">
-                            CANCEL
+                            EXIT
                         </div>
 
                         <div class="button-next" onclick="createRoom()">
@@ -38,9 +38,11 @@
     var electron = require('electron');
     var currentWindow = electron.remote.getCurrentWindow();
 
+    console.log(currentWindow.global);
+
     document.getElementById("player-name").placeholder = currentWindow.global.playerName;
     document.getElementById("player-ip").innerHTML = currentWindow.global.ip;
-    document.getElementById("player-port").innerHTML = currentWindow.global.port;
+    document.getElementById("player-port").innerHTML = currentWindow.global.port.toString();
 
     function back() {
         currentWindow.actions.back();
@@ -54,7 +56,10 @@
         } else {
 	        playerName = document.getElementById("player-name").value;
         }
-        currentWindow.actions.createRoom(playerName, currentWindow.global.port);
+        currentWindow.actions.createRoom(
+        	currentWindow.global.ip,
+            currentWindow.global.port,
+            playerName);
     }
 </script>
 

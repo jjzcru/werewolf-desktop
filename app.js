@@ -11,6 +11,7 @@ const Server = require('./server/server')
 const Client = require('./server/client')
 const {  menuTemplate, getRandomName } = require('./config');
 const DB = require('./server/db')
+const Window = require('./server/window');
 
 let displayMenu = false;
 let mainWindow = {};
@@ -44,8 +45,6 @@ function createMainWindow() {
         resizable: true,
         fullscreen: false,
     });
-
-    mainWindow.stack = [];
 
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'views', 'index.html'),
@@ -96,7 +95,9 @@ function createMainWindow() {
             }));
         },
         goToCreateRoom: function() {
-            getOpenPort()
+	        const window = new Window('master');
+	        rooms.push(window);
+            /*getOpenPort()
                 .then((port) => {
                     mainWindow.global.port = port;
                     mainWindow.global.playerName = getRandomName();
@@ -107,10 +108,11 @@ function createMainWindow() {
                         slashes: true
                     }));
                 })
-                .catch(err => console.log(err));
+                .catch(err => console.log(err));*/
 
         },
         goToJoinRoom: function() {
+	        new Window('slave');
             getOpenPort()
                 .then((port) => {
                     mainWindow.global.port = port;
